@@ -10,6 +10,8 @@ import Course.Applicative
 import Course.Monad
 import Course.Functor
 import Course.List
+import qualified Prelude as P
+import GHC.Core.Coercion.Axiom (fsFromRole)
 
 {-
 
@@ -85,32 +87,39 @@ printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile fileName contents = do
+  putStrLn $ "--- Content of " ++ fileName ++ " file:"
+  putStrLn contents
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+
+printFiles Nil = P.return ()
+printFiles ((f, c) :. fcs) = printFile f c >> printFiles fcs
+  
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile fPath = do
+  content <- readFile fPath
+  P.return (fPath, content)
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles Nil = P.return Nil
+getFiles (f :. fs) = do
+  firstContent <- getFile f
+  restContents <- getFiles fs
+  P.return (firstContent :. restContents)
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
