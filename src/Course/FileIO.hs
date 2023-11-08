@@ -11,7 +11,6 @@ import Course.Monad
 import Course.Functor
 import Course.List
 import qualified Prelude as P
-import GHC.Core.Coercion.Axiom (fsFromRole)
 
 {-
 
